@@ -1,0 +1,61 @@
+group 'net.shakuro.pinion.selenium'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    agent
+}
+
+dependencies {
+    compile 'org.testng:testng:6.11'
+    compile 'org.seleniumhq.selenium:selenium-java:3.4.0'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    agent "org.aspectj:aspectjweaver:1.8.10"
+    compile 'io.qameta.allure:allure-testng:2.0-BETA17'
+    compile 'org.hamcrest:java-hamcrest:2.0.0.0'
+}
+
+task testSome(type: Test) {
+    useTestNG{
+        suites 'src/test/resources/testng-some.xml'
+    }
+    if (project.hasProperty('browser')){
+        systemProperty 'browser', "${browser}"
+    }
+    if (project.hasProperty('target')){
+        systemProperty 'target', "${target}"
+    }
+    systemProperty 'allure.results.directory', 'build/allure-results'
+    systemProperty 'allure.link.issue.pattern', 'https://github.com/allure-framework/allure-docs/issues/{}'
+    systemProperty 'allure.link.tms.pattern', 'https://github.com/allure-framework/allure-docs/issues/{}'
+}
+
+testSome.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
+
+task testAnother(type: Test) {
+    useTestNG{
+        suites 'src/test/resources/testng-another.xml'
+    }
+    if (project.hasProperty('browser')){
+        systemProperty 'browser', "${browser}"
+    }
+    if (project.hasProperty('target')){
+        systemProperty 'target', "${target}"
+    }
+    systemProperty 'allure.results.directory', 'build/allure-results'
+    systemProperty 'allure.link.issue.pattern', 'https://github.com/allure-framework/allure-docs/issues/{}'
+    systemProperty 'allure.link.tms.pattern', 'https://github.com/allure-framework/allure-docs/issues/{}'
+}
+
+testAnother.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
